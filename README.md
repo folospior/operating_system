@@ -6,19 +6,25 @@
 ```sh
 gleam add operating_system@1
 ```
+
 ```gleam
 import operating_system
 
+pub type OS {
+  Windows
+  Linux
+  MacOs
+}
+
 pub fn main() -> Nil {
   let os_name = operating_system.name()
+  let os = case os_name {
+    "windows_nt" -> Windows
+    "linux" -> Linux
+    "darwin" -> MacOs
+    _ -> Linux
+  }
 }
 ```
 
 Further documentation can be found at <https://hexdocs.pm/operating_system>.
-
-## Development
-
-```sh
-gleam run   # Run the project
-gleam test  # Run the tests
-```
