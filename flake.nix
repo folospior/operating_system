@@ -1,20 +1,27 @@
 {
-  inputs.nixpkgs.url = "nixpkgs/nixos-25.05";
-  outputs = {
-    nixpkgs,
-    ...
-  }: let
-    pkgs = import nixpkgs {system = "x86_64-linux";};
+  inputs = {
+    nixpkgs.url = "nixpkgs/nixos-25.05";
+  };
+  outputs = {nixpkgs, ...}: let
+    forAllSystems = function:
+      nixpkgs.lib.genAttrs [
+        "aarch64-darwin"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "x86_64-linux"
+      ] (system: function nixpkgs.legacyPackages.${system});
   in {
-    devShells."x86_64-linux".default = pkgs.mkShell {
-      buildInputs = with pkgs; [
-        gleam
-        rebar3
-        beamPackages.erlang
-        nodejs
-        bun
-        deno
-      ];
-    };
+    devShells = forAllSystems (pkgs: {
+      default = pkgs.mkShellNoCC {
+        buildInputs = with pkgs; [
+          gleam
+          rebar3
+          beamPackages.erlang
+          nodejs
+          bun
+          deno
+        ];
+      };
+    });
   };
 }
